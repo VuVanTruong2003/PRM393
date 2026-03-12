@@ -31,39 +31,43 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: Column(
         children: [
-          const GradientHeader(
+          GradientHeader(
             height: 220,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 10),
-                Align(
-                  alignment: Alignment.center,
-                  child: CircleAvatar(
-                    radius: 36,
-                    backgroundColor: Colors.white,
-                    child: Icon(
-                      Icons.account_balance_wallet_outlined,
-                      size: 34,
-                      color: Color(0xFF2F80ED),
+            child: SingleChildScrollView(
+              padding: EdgeInsets.zero,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 10),
+                  Align(
+                    alignment: Alignment.center,
+                    child: CircleAvatar(
+                      radius: 36,
+                      backgroundColor: Colors.white,
+                      child: Icon(
+                        Icons.account_balance_wallet_outlined,
+                        size: 34,
+                        color: Color(0xFF2F80ED),
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(height: 16),
-                Text(
-                  'Quản Lý Chi Tiêu',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
+                  SizedBox(height: 16),
+                  Text(
+                    'Quản Lý Chi Tiêu',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-                SizedBox(height: 6),
-                Text(
-                  'Quản lý tài chính cá nhân thông minh',
-                  style: TextStyle(color: Colors.white70),
-                ),
-              ],
+                  SizedBox(height: 6),
+                  Text(
+                    'Quản lý tài chính cá nhân thông minh',
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                ],
+              ),
             ),
           ),
           Expanded(
