@@ -6,6 +6,7 @@ import '../../core/formatters.dart';
 import '../../models/transaction_entry.dart';
 import '../../state/categories_controller.dart';
 import '../../state/transactions_controller.dart';
+import '../widgets/animated_appear.dart';
 import '../widgets/section_card.dart';
 
 class ReportsScreen extends StatefulWidget {
@@ -72,6 +73,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
         ),
       );
     }
+    final animationKey =
+        '${_month.year}-${_month.month}-$expensePrev-$expenseThis-$total-${sections.length}';
 
     return Scaffold(
       appBar: AppBar(
@@ -96,124 +99,26 @@ class _ReportsScreenState extends State<ReportsScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          SectionCard(
-            color: const Color(0xFFEAF7EE),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          AnimatedAppear(
+            child: Row(
               children: [
-                Row(
-                  children: [
-                    const Icon(Icons.trending_down, color: Color(0xFF1B7F3A)),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        diffPct == null
-                            ? 'So sánh tháng'
-                            : (diffPct <= 0
-                                ? 'Chi tiêu giảm'
-                                : 'Chi tiêu tăng'),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 16,
-                          color: Color(0xFF1B7F3A),
-                        ),
-                      ),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    if (diffPct != null)
-                      Text(
-                        '${diffPct.abs().toStringAsFixed(1)}%',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w900,
-                          fontSize: 20,
-                          color: Color(0xFF1B7F3A),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.calendar_month_outlined,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _MiniMetric(
-                        title: 'Tháng trước',
-                        value: Formatters.money(expensePrev),
-                        color: Colors.blue,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _MiniMetric(
-                        title: 'Tháng này',
-                        value: Formatters.money(expenseThis),
-                        color: Colors.orange,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          SectionCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'So sánh tháng',
-                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  height: 220,
-                  child: BarChart(
-                    BarChartData(
-                      borderData: FlBorderData(show: false),
-                      gridData: const FlGridData(show: true),
-                      titlesData: FlTitlesData(
-                        topTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                        rightTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                        leftTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: true, reservedSize: 40),
-                        ),
-                        bottomTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            getTitlesWidget: (v, meta) {
-                              final label = v == 0 ? 'Tháng trước' : 'Tháng này';
-                              return Padding(
-                                padding: const EdgeInsets.only(top: 8),
-                                child: Text(label),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                      barGroups: [
-                        BarChartGroupData(
-                          x: 0,
-                          barRods: [
-                            BarChartRodData(
-                              toY: expensePrev.toDouble(),
-                              color: Colors.blue,
-                              width: 26,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ],
-                        ),
-                        BarChartGroupData(
-                          x: 1,
-                          barRods: [
-                            BarChartRodData(
-                              toY: expenseThis.toDouble(),
-                              color: Colors.orange,
-                              width: 26,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ],
+                        const SizedBox(width: 8),
+                        Text(
+                          'Tháng ${_month.month}/${_month.year}',
+                          style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
                       ],
                     ),
@@ -223,29 +128,264 @@ class _ReportsScreenState extends State<ReportsScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          SectionCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Phân bổ chi tiêu theo danh mục',
-                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
-                ),
-                const SizedBox(height: 12),
-                if (sections.isEmpty)
-                  const Text('Chưa có dữ liệu chi tiêu cho tháng này.')
-                else
-                  SizedBox(
-                    height: 260,
-                    child: PieChart(
-                      PieChartData(
-                        sections: sections,
-                        centerSpaceRadius: 40,
-                        sectionsSpace: 2,
-                      ),
+          AnimatedAppear(
+            delay: const Duration(milliseconds: 70),
+            child: SectionCard(
+              color: const Color(0xFFEAF7EE),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'So sánh tháng',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 16,
                     ),
                   ),
-              ],
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      const Icon(Icons.trending_down, color: Color(0xFF1B7F3A)),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          diffPct == null
+                              ? 'So sánh tháng'
+                              : (diffPct <= 0
+                                  ? 'Chi tiêu giảm'
+                                  : 'Chi tiêu tăng'),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 16,
+                            color: Color(0xFF1B7F3A),
+                          ),
+                        ),
+                      ),
+                      if (diffPct != null)
+                        TweenAnimationBuilder<double>(
+                          key: ValueKey('pct-$animationKey'),
+                          tween: Tween<double>(begin: 0, end: diffPct.abs()),
+                          duration: const Duration(milliseconds: 450),
+                          curve: Curves.easeOutCubic,
+                          builder: (context, value, child) {
+                            return Text(
+                              '${value.toStringAsFixed(1)}%',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w900,
+                                fontSize: 20,
+                                color: Color(0xFF1B7F3A),
+                              ),
+                            );
+                          },
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _MiniMetric(
+                          title: 'Tháng trước',
+                          amount: expensePrev,
+                          color: Colors.blue,
+                          animationKey: 'prev-$animationKey',
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _MiniMetric(
+                          title: 'Tháng này',
+                          amount: expenseThis,
+                          color: Colors.orange,
+                          animationKey: 'now-$animationKey',
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          AnimatedAppear(
+            delay: const Duration(milliseconds: 130),
+            child: SectionCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Xu hướng chi tiêu',
+                    style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Nhấn vào cột để xem chi tiết',
+                    style: TextStyle(color: Theme.of(context).hintColor),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 220,
+                    child: TweenAnimationBuilder<double>(
+                      key: ValueKey('bar-$animationKey'),
+                      tween: Tween<double>(begin: 0, end: 1),
+                      duration: const Duration(milliseconds: 550),
+                      curve: Curves.easeOutCubic,
+                      builder: (context, progress, child) {
+                        return BarChart(
+                          BarChartData(
+                            borderData: FlBorderData(show: false),
+                            gridData: const FlGridData(show: true),
+                            titlesData: FlTitlesData(
+                              topTitles: const AxisTitles(
+                                sideTitles: SideTitles(showTitles: false),
+                              ),
+                              rightTitles: const AxisTitles(
+                                sideTitles: SideTitles(showTitles: false),
+                              ),
+                              leftTitles: const AxisTitles(
+                                sideTitles:
+                                    SideTitles(showTitles: true, reservedSize: 40),
+                              ),
+                              bottomTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: true,
+                                  getTitlesWidget: (v, meta) {
+                                    final label =
+                                        v == 0 ? 'Tháng trước' : 'Tháng này';
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 8),
+                                      child: Text(label),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                            barGroups: [
+                              BarChartGroupData(
+                                x: 0,
+                                barRods: [
+                                  BarChartRodData(
+                                    toY: expensePrev * progress,
+                                    color: Colors.blue,
+                                    width: 26,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ],
+                              ),
+                              BarChartGroupData(
+                                x: 1,
+                                barRods: [
+                                  BarChartRodData(
+                                    toY: expenseThis * progress,
+                                    color: Colors.orange,
+                                    width: 26,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          AnimatedAppear(
+            delay: const Duration(milliseconds: 190),
+            child: SectionCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Phân bổ chi tiêu theo danh mục',
+                    style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Nhấn vào danh mục để xem chi tiết',
+                    style: TextStyle(color: Theme.of(context).hintColor),
+                  ),
+                  const SizedBox(height: 12),
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 260),
+                    child: sections.isEmpty
+                        ? const Text(
+                            'Chưa có dữ liệu chi tiêu cho tháng này.',
+                            key: ValueKey('pie-empty'),
+                          )
+                        : SizedBox(
+                            key: ValueKey('pie-$animationKey'),
+                            height: 260,
+                            child: TweenAnimationBuilder<double>(
+                              tween: Tween<double>(begin: 0, end: 1),
+                              duration: const Duration(milliseconds: 600),
+                              curve: Curves.easeOutCubic,
+                              builder: (context, progress, child) {
+                                return PieChart(
+                                  PieChartData(
+                                    sections: [
+                                      for (final section in sections)
+                                        section.copyWith(
+                                          value: section.value * progress,
+                                          title: progress > 0.85 ? section.title : '',
+                                        ),
+                                    ],
+                                    centerSpaceRadius: 40,
+                                    sectionsSpace: 2,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                  ),
+                  if (top.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    const Divider(height: 1),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Chi tiêu theo danh mục',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w900,
+                          ),
+                    ),
+                    const SizedBox(height: 6),
+                    TweenAnimationBuilder<double>(
+                      key: ValueKey('total-$animationKey'),
+                      tween: Tween<double>(begin: 0, end: total.toDouble()),
+                      duration: const Duration(milliseconds: 450),
+                      curve: Curves.easeOutCubic,
+                      builder: (context, value, child) {
+                        return Text(
+                          'Tổng: ${Formatters.money(value.round())}',
+                          style: const TextStyle(
+                            color: Colors.redAccent,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    for (var i = 0; i < top.length && i < 5; i++)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: AnimatedAppear(
+                          delay: Duration(milliseconds: 240 + (i * 40)),
+                          child: _CategoryProgressRow(
+                            label: categories.byId(top[i].key)?.name ?? 'Khác',
+                            amount: top[i].value,
+                            total: total,
+                            color: colors[i % colors.length],
+                          ),
+                        ),
+                      ),
+                  ],
+                ],
+              ),
             ),
           ),
         ],
@@ -269,13 +409,15 @@ class _ReportsScreenState extends State<ReportsScreen> {
 class _MiniMetric extends StatelessWidget {
   const _MiniMetric({
     required this.title,
-    required this.value,
+    required this.amount,
     required this.color,
+    required this.animationKey,
   });
 
   final String title;
-  final String value;
+  final int amount;
   final Color color;
+  final String animationKey;
 
   @override
   Widget build(BuildContext context) {
@@ -284,9 +426,17 @@ class _MiniMetric extends StatelessWidget {
       children: [
         Text(title, style: TextStyle(color: Theme.of(context).hintColor)),
         const SizedBox(height: 6),
-        Text(
-          value,
-          style: TextStyle(fontWeight: FontWeight.w900, color: color),
+        TweenAnimationBuilder<double>(
+          key: ValueKey(animationKey),
+          tween: Tween<double>(begin: 0, end: amount.toDouble()),
+          duration: const Duration(milliseconds: 420),
+          curve: Curves.easeOutCubic,
+          builder: (context, value, child) {
+            return Text(
+              Formatters.money(value.round()),
+              style: TextStyle(fontWeight: FontWeight.w900, color: color),
+            );
+          },
         ),
       ],
     );
@@ -338,6 +488,7 @@ class _MonthDropdown extends StatelessWidget {
 
     return DropdownButtonHideUnderline(
       child: DropdownButton<DateTime>(
+        borderRadius: BorderRadius.circular(16),
         value: months.firstWhere(
           (m) => m.year == month.year && m.month == month.month,
           orElse: () => months.first,
@@ -354,6 +505,54 @@ class _MonthDropdown extends StatelessWidget {
           onChanged(DateTime(v.year, v.month));
         },
       ),
+    );
+  }
+}
+
+class _CategoryProgressRow extends StatelessWidget {
+  const _CategoryProgressRow({
+    required this.label,
+    required this.amount,
+    required this.total,
+    required this.color,
+  });
+
+  final String label;
+  final int amount;
+  final int total;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final ratio = total == 0 ? 0.0 : amount / total;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ),
+            Text(
+              Formatters.money(amount),
+              style: const TextStyle(fontWeight: FontWeight.w800),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(999),
+          child: LinearProgressIndicator(
+            value: ratio.clamp(0.0, 1.0),
+            minHeight: 8,
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+            valueColor: AlwaysStoppedAnimation(color),
+          ),
+        ),
+      ],
     );
   }
 }

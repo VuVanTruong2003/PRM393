@@ -42,9 +42,17 @@ class ShellScaffold extends StatelessWidget {
             body: child,
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerDocked,
-            floatingActionButton: FloatingActionButton(
-              onPressed: () => _showQuickAdd(context),
-              child: const Icon(Icons.add),
+            floatingActionButton: TweenAnimationBuilder<double>(
+              tween: Tween<double>(begin: 0.96, end: 1),
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOutBack,
+              builder: (context, value, fabChild) {
+                return Transform.scale(scale: value, child: fabChild);
+              },
+              child: FloatingActionButton(
+                onPressed: () => _showQuickAdd(context),
+                child: const Icon(Icons.add),
+              ),
             ),
             bottomNavigationBar: SafeArea(
               top: false,
@@ -240,18 +248,47 @@ class _BottomTab extends StatelessWidget {
     return InkResponse(
       onTap: onTap,
       radius: 28,
-      child: Padding(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: color),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: TextStyle(fontSize: 11, height: 1.0, color: color),
-            ),
-          ],
+        decoration: BoxDecoration(
+          color: selected ? cs.primary.withValues(alpha: 0.10) : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: AnimatedScale(
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOutBack,
+          scale: selected ? 1.04 : 1,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOutCubic,
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: selected
+                      ? cs.primary.withValues(alpha: 0.12)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: color),
+              ),
+              const SizedBox(height: 2),
+              AnimatedDefaultTextStyle(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOutCubic,
+                style: TextStyle(
+                  fontSize: selected ? 11.5 : 11,
+                  height: 1.0,
+                  color: color,
+                  fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
+                ),
+                child: Text(label),
+              ),
+            ],
+          ),
         ),
       ),
     );

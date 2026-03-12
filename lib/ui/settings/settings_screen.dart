@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/app_ui.dart';
@@ -6,6 +7,7 @@ import '../../firebase_bootstrap.dart';
 import '../../state/app_config.dart';
 import '../../state/auth_controller.dart';
 import '../../state/notification_settings_controller.dart';
+import '../../state/profile_controller.dart';
 import '../widgets/section_card.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -15,6 +17,7 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final config = context.watch<AppConfig>();
     final auth = context.watch<AuthController>();
+    final profileCtrl = context.watch<ProfileController>();
     final notif = context.watch<NotificationSettingsController>();
 
     return Scaffold(
@@ -38,34 +41,30 @@ class SettingsScreen extends StatelessWidget {
                     child: const Icon(Icons.person_outline),
                   ),
                   title: Text(
-                    config.useFirebase
-                        ? (auth.user?.displayName?.trim().isNotEmpty == true
-                            ? auth.user!.displayName!.trim()
-                            : (auth.user?.email ?? ''))
-                        : 'Khách (local)',
+                    auth.isSignedIn
+                        ? profileCtrl.displayNameOrFallback()
+                        : 'Chưa đăng nhập',
                     style: const TextStyle(fontWeight: FontWeight.w800),
                   ),
-                  subtitle: Text(
-                    config.useFirebase ? 'Firebase account' : 'Demo mode',
-                  ),
+                  subtitle: const Text('Firebase account'),
                   trailing: FilledButton.tonal(
                     onPressed: auth.isSignedIn ? () => auth.signOut() : null,
                     child: const Text('Đăng xuất'),
                   ),
+                  onTap: () => context.push('/profile'),
                 ),
                 const Divider(height: 16),
-                SwitchListTile(
+                ListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Multi-user (Firebase)'),
+                  leading: const Icon(Icons.cloud_done_outlined),
+                  title: const Text('Đồng bộ dữ liệu realtime'),
                   subtitle: Text(
                     FirebaseBootstrap.isConfigured
                         ? 'Mỗi user dữ liệu riêng trên Firestore.'
-                        : 'Chưa cấu hình Firebase (vẫn dùng demo local).',
+                        : 'Firebase chưa cấu hình hoàn chỉnh.',
                   ),
-                  value: config.useFirebase,
-                  onChanged: (v) => config.setUseFirebase(v),
                 ),
-                if (config.useFirebase && !FirebaseBootstrap.isConfigured) ...[
+                if (!FirebaseBootstrap.isConfigured) ...[
                   const SizedBox(height: 8),
                   Text(
                     'Để bật Firebase: thay REPLACE_ME trong lib/firebase_options.dart bằng thông số thật (hoặc dùng FlutterFire CLI).',
@@ -97,9 +96,33 @@ class SettingsScreen extends StatelessWidget {
                   contentPadding: EdgeInsets.zero,
                   leading: const Icon(Icons.currency_exchange_outlined),
                   title: const Text('Đơn vị tiền tệ'),
-                  subtitle: const Text('Việt Nam Đồng (₫)'),
+                  subtitle: Text(_currencyLabel(profileCtrl.profile.currencyCode)),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () {},
+                  onTap: () => context.push('/profile'),
+                ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.account_balance_wallet_outlined),
+                  title: const Text('Quản lý ví'),
+                  subtitle: const Text('Tạo và chỉnh sửa các ví tiền'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.go('/accounts'),
+                ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.category_outlined),
+                  title: const Text('Quản lý danh mục'),
+                  subtitle: const Text('Tùy chỉnh danh mục thu/chi'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.go('/categories'),
+                ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.savings_outlined),
+                  title: const Text('Ngân sách'),
+                  subtitle: const Text('Thiết lập ngân sách theo tháng'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.go('/budgets'),
                 ),
                 const Divider(height: 16),
                 RadioGroup<ThemeMode>(
@@ -212,6 +235,14 @@ class SettingsScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+String _currencyLabel(String code) {
+  return switch (code) {
+    'USD' => 'US Dollar (\$)',
+    'EUR' => 'Euro (€)',
+    _ => 'Việt Nam Đồng (₫)',
+  };
 }
 
 String _fmtTime(BuildContext context, TimeOfDay t) =>

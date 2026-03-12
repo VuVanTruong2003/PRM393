@@ -4,39 +4,22 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 import '../firebase_bootstrap.dart';
-import 'app_config.dart';
 
 class AuthController extends ChangeNotifier {
-  AuthController({required AppConfig appConfig}) : _appConfig = appConfig {
-    _appConfig.addListener(_onConfigChanged);
-    _onConfigChanged();
+  AuthController() {
+    _ensureFirebaseListening();
   }
 
-  final AppConfig _appConfig;
   StreamSubscription<User?>? _authSub;
 
-  bool _isGuest = false;
   User? _user;
   bool _initializingFirebase = false;
   Object? _lastError;
 
-  bool get isSignedIn => _appConfig.useFirebase ? _user != null : _isGuest;
-  bool get isGuest => !_appConfig.useFirebase && _isGuest;
+  bool get isSignedIn => _user != null;
   User? get user => _user;
   bool get isFirebaseInitializing => _initializingFirebase;
   Object? get lastError => _lastError;
-
-  void _onConfigChanged() {
-    if (_appConfig.useFirebase) {
-      _isGuest = false;
-      _ensureFirebaseListening();
-    } else {
-      _stopFirebaseListening();
-      _user = null;
-      _lastError = null;
-      notifyListeners();
-    }
-  }
 
   Future<void> _ensureFirebaseListening() async {
     if (_authSub != null || _initializingFirebase) return;
@@ -70,23 +53,13 @@ class AuthController extends ChangeNotifier {
     _authSub = null;
   }
 
-  Future<void> continueAsGuest() async {
-    _lastError = null;
-    _isGuest = true;
-    notifyListeners();
-  }
-
   Future<void> signOut() async {
     _lastError = null;
 
-    if (_appConfig.useFirebase) {
-      try {
-        await FirebaseAuth.instance.signOut();
-      } catch (e) {
-        _lastError = e;
-      }
-    } else {
-      _isGuest = false;
+    try {
+      await FirebaseAuth.instance.signOut();
+    } catch (e) {
+      _lastError = e;
     }
 
     notifyListeners();
@@ -167,7 +140,6 @@ class AuthController extends ChangeNotifier {
   @override
   void dispose() {
     _stopFirebaseListening();
-    _appConfig.removeListener(_onConfigChanged);
     super.dispose();
   }
 }

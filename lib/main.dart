@@ -10,6 +10,7 @@ import 'state/auth_controller.dart';
 import 'state/budgets_controller.dart';
 import 'state/categories_controller.dart';
 import 'state/notification_settings_controller.dart';
+import 'state/profile_controller.dart';
 import 'state/transactions_controller.dart';
 
 Future<void> main() async {
@@ -20,7 +21,7 @@ Future<void> main() async {
   await store.init();
 
   final appConfig = AppConfig.fromStore(store);
-  final authController = AuthController(appConfig: appConfig);
+  final authController = AuthController();
 
   runApp(
     MultiProvider(
@@ -29,19 +30,30 @@ Future<void> main() async {
         ChangeNotifierProvider.value(value: appConfig),
         ChangeNotifierProvider.value(value: authController),
         ChangeNotifierProvider(
-          create: (context) => AccountsController(store: store),
+          create: (context) => AccountsController(
+            authController: authController,
+          ),
         ),
         ChangeNotifierProvider(
-          create: (context) => CategoriesController(store: store),
+          create: (context) => CategoriesController(
+            authController: authController,
+          ),
         ),
         ChangeNotifierProvider(
-          create: (context) => TransactionsController(store: store),
+          create: (context) => TransactionsController(
+            authController: authController,
+          ),
         ),
         ChangeNotifierProvider(
-          create: (context) => BudgetsController(store: store),
+          create: (context) => BudgetsController(
+            authController: authController,
+          ),
         ),
         ChangeNotifierProvider(
           create: (context) => NotificationSettingsController(store: store),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ProfileController(authController: authController),
         ),
       ],
       child: const FinanceApp(),
