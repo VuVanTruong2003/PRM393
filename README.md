@@ -40,7 +40,7 @@ flutter run -d android
 flutter run -d chrome
 ```
 
-Mặc định app chạy ở chế độ **Demo (local)**: dữ liệu được lưu cục bộ bằng **Hive**.
+Dữ liệu tài chính chính lưu trên **Firestore** (theo user); Hive dùng cho một số **cài đặt cục bộ** (vd. thông báo).
 
 ## 3) (Tuỳ chọn) Cấu hình Firebase (đồng bộ dữ liệu)
 
@@ -51,11 +51,15 @@ Mặc định app chạy ở chế độ **Demo (local)**: dữ liệu được 
 3. Thay toàn bộ `REPLACE_ME` trong file `lib/firebase_options.dart` bằng thông số thật  
    (hoặc dùng **FlutterFire CLI** để generate lại file này)
 
-Khi chưa cấu hình Firebase, ứng dụng vẫn hoạt động bình thường ở chế độ demo local.
+Khi chưa cấu hình Firebase, cần hoàn thiện `lib/firebase_options.dart` để đăng nhập và đồng bộ dữ liệu.
+
+## Phân vùng code cho nhóm (5 người)
+
+Xem file **[docs/PHAN_CODE_NHOM.md](docs/PHAN_CODE_NHOM.md)** — mỗi thành viên có danh sách file/thư mục cụ thể để đọc hiểu và làm SRS.
 
 ## Tính năng MVP hiện có
 
-- **Auth**: đăng nhập kiểu Demo (khách) hoặc **Firebase (email/password)**
+- **Auth**: **Firebase (email/password)**, quên mật khẩu
 - **Ví (Accounts)**: thêm / sửa / xoá
 - **Danh mục (Categories)**: thêm / sửa / xoá (thu / chi)
 - **Giao dịch (Transactions)**: thêm / sửa / xoá, chọn ví + danh mục + ngày + ghi chú

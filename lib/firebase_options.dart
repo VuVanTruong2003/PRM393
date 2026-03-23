@@ -1,7 +1,4 @@
-// This is a lightweight placeholder so the app can compile/run in demo mode.
-// When you're ready, generate real values via FlutterFire CLI and replace this.
-//
-// Docs: https://firebase.google.com/docs/flutter/setup
+
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
@@ -19,7 +16,7 @@ class DefaultFirebaseOptions {
     };
   }
 
-  // Lấy từ android/app/google-services.json
+  //  android/app/google-services.json
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDkj-LdzBif_7EAfKB2Dg7xubYClm0egXg',
     appId: '1:534007286993:android:a8a7c662c98c5fef1a89f0',
@@ -56,7 +53,7 @@ class DefaultFirebaseOptions {
   measurementId: "G-GLGEPKFSKJ"
   );
 
-  // Windows dùng chung config với Web (Firebase không có app riêng cho Windows)
+  //  dùng chung config với Web
   static const FirebaseOptions windows = FirebaseOptions(
     apiKey: 'AIzaSyAiufWmRVNH0hH9EJhJ4qTd8DMVgkkPcqM',
     appId: '1:534007286993:web:f17fcc993f6a46b21a89f0',

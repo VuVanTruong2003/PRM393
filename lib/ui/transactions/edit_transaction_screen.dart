@@ -303,7 +303,8 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
     bool isEditing,
   ) async {
     if (!_formKey.currentState!.validate()) return;
-    final amount = int.parse(_amountController.text.trim());
+    final amount = int.tryParse(_amountController.text.trim());
+    if (amount == null) return;
 
     if (isEditing) {
       final old = txController.byId(widget.id!);

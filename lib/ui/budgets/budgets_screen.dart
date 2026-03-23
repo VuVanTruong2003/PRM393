@@ -186,7 +186,8 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
           FilledButton(
             onPressed: () async {
               if (!formKey.currentState!.validate()) return;
-              final limit = int.parse(limitController.text.trim());
+              final limit = int.tryParse(limitController.text.trim());
+              if (limit == null) return;
               final selectedCategoryId = categoryId!;
 
               if (existing == null) {

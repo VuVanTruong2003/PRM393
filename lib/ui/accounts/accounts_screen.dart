@@ -79,8 +79,12 @@ class AccountsScreen extends StatelessWidget {
                 controller: balanceController,
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(labelText: 'Số dư ban đầu'),
-                validator: (v) =>
-                    int.tryParse((v ?? '').trim()) == null ? 'Nhập số' : null,
+                validator: (v) {
+                  final parsed = int.tryParse((v ?? '').trim());
+                  if (parsed == null) return 'Nhập số';
+                  if (parsed < 0) return 'Số dư không được âm';
+                  return null;
+                },
               ),
             ],
           ),
@@ -94,19 +98,32 @@ class AccountsScreen extends StatelessWidget {
             onPressed: () async {
               if (!formKey.currentState!.validate()) return;
               final name = nameController.text;
-              final balanceStart = int.parse(balanceController.text.trim());
+              final balanceStart = int.tryParse(balanceController.text.trim());
+              if (balanceStart == null) return;
 
-              if (existing == null) {
-                await controller.create(name: name, balanceStart: balanceStart);
-              } else {
-                await controller.update(
-                  Account(
-                    id: existing.id,
-                    name: name.trim(),
+              try {
+                if (existing == null) {
+                  await controller.create(
+                    name: name,
                     balanceStart: balanceStart,
-                    createdAt: existing.createdAt,
-                  ),
-                );
+                  );
+                } else {
+                  await controller.update(
+                    Account(
+                      id: existing.id,
+                      name: name.trim(),
+                      balanceStart: balanceStart,
+                      createdAt: existing.createdAt,
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Lưu ví thất bại: $e')),
+                  );
+                }
+                return;
               }
 
               if (context.mounted) Navigator.of(context).pop();

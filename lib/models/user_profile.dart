@@ -1,4 +1,4 @@
-/// Hồ sơ người dùng lưu trên Firestore (users/{uid}/profile/me).
+
 class UserProfile {
   const UserProfile({
     this.displayName = '',

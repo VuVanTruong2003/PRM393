@@ -140,7 +140,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         const SizedBox(height: 16),
                         DropdownButtonFormField<String>(
-                          value: _currencyValue(profile.currencyCode),
+                          key: ValueKey(profile.currencyCode),
+                          initialValue: _currencyValue(profile.currencyCode),
                           decoration: const InputDecoration(
                             labelText: 'Đơn vị tiền tệ',
                             border: OutlineInputBorder(),
@@ -161,7 +162,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         const SizedBox(height: 12),
                         DropdownButtonFormField<String>(
-                          value: _timezoneValue(profile.timezone),
+                          key: ValueKey(profile.timezone),
+                          initialValue: _timezoneValue(profile.timezone),
                           decoration: const InputDecoration(
                             labelText: 'Múi giờ',
                             border: OutlineInputBorder(),
